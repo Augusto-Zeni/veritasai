@@ -1,7 +1,8 @@
-import js from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import reactHooks from 'eslint-plugin-react-hooks';
-import globals from 'globals';
+import js from '@eslint/js'
+import tseslint from 'typescript-eslint'
+import reactHooks from 'eslint-plugin-react-hooks'
+import globals from 'globals'
+import stylistic from '@stylistic/eslint-plugin'
 
 export default tseslint.config(
   { ignores: ['**/node_modules/**', '**/dist/**', '**/coverage/**', 'eval/runs/**', 'data/**'] },
@@ -9,7 +10,11 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     languageOptions: { globals: { ...globals.node } },
+    plugins: { '@stylistic': stylistic },
     rules: {
+      '@stylistic/semi': ['error', 'never'],
+      '@stylistic/quotes': ['error', 'single', { avoidEscape: true }],
+      '@stylistic/jsx-quotes': ['error', 'prefer-single'],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
@@ -21,4 +26,4 @@ export default tseslint.config(
     plugins: { 'react-hooks': reactHooks },
     rules: reactHooks.configs.recommended.rules,
   },
-);
+)

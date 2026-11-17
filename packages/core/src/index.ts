@@ -1,1 +1,1 @@
-export { VERSION } from './config.ts';
+export { VERSION } from './config.ts'
