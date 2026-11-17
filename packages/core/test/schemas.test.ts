@@ -6,6 +6,7 @@ const claimResult = {
   query: 'IBGE taxa de desemprego 2025',
   evidences: [
     {
+      id: 'E1',
       url: 'https://agenciadenoticias.ibge.gov.br/x',
       domain: 'agenciadenoticias.ibge.gov.br',
       title: 'Desemprego',
@@ -14,6 +15,7 @@ const claimResult = {
   ],
   label: 'SUPORTADA',
   rationale: 'A evidência confirma.',
+  evidenceIdsUsed: ['E1'],
 }
 
 const result = {

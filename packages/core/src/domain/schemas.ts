@@ -34,6 +34,8 @@ export const ClaimSchema = z.object({
 export type Claim = z.infer<typeof ClaimSchema>
 
 export const EvidenceSchema = z.object({
+  /** Identificador dentro da afirmação (E1, E2...), citado pelo LLM na verificação. */
+  id: z.string().min(1),
   url: z.string().url(),
   domain: z.string().min(1),
   title: z.string(),
@@ -49,6 +51,8 @@ export const ClaimResultSchema = z.object({
   label: ClaimLabelSchema,
   /** Justificativa curta do LLM (ou motivo da degradação, em caso de erro). */
   rationale: z.string(),
+  /** Ids das evidências que o LLM disse ter usado para decidir o rótulo. */
+  evidenceIdsUsed: z.array(z.string()),
   /** Preenchido quando a afirmação virou INSUFICIENTE por falha (ex.: cota esgotada). */
   error: z.string().optional(),
 })

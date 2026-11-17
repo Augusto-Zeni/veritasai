@@ -5,26 +5,11 @@ import {
   CachedLlmClient,
   generateJson,
   stripCodeFences,
-  type GenerateOptions,
-  type LlmClient,
   type LlmRequest,
-  type LlmResponse,
 } from '../src/clients/llm.ts'
 import { LlmOutputError } from '../src/errors.ts'
 import { UsageTracker } from '../src/usage.ts'
-
-/** LLM falso: devolve os textos na ordem e grava as requisições. */
-class FakeLlm implements LlmClient {
-  readonly model = 'fake-model'
-  readonly requests: LlmRequest[] = []
-  constructor(private readonly outputs: string[]) {}
-  async generate(request: LlmRequest, _options?: GenerateOptions): Promise<LlmResponse> {
-    this.requests.push(request)
-    const text = this.outputs.shift()
-    if (text === undefined) throw new Error('FakeLlm: sem saídas')
-    return { text, model: this.model, usage: { input: 10, output: 5 }, cached: false }
-  }
-}
+import { FakeLlm } from './fakes.ts'
 
 const Schema = z.object({
   label: z.enum(['SUPORTADA', 'CONTRADITA', 'INSUFICIENTE']),

@@ -4,3 +4,5 @@ data/
 dist/
 coverage/
 CLAUDE.md
+# Prompts: qualquer mudança de texto exige nova versã, não reformatar automaticamente
+packages/core/src/prompts/*.md

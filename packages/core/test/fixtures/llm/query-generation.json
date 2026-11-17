@@ -1,0 +1,10 @@
+{
+  "queries": [
+    {
+      "id": "c1",
+      "query": "Ministério da Saúde amplia vacinação dengue 16 estados fevereiro 2024"
+    },
+    { "id": "c2", "query": "\"1,2 milhão de doses\" vacina dengue site:gov.br" },
+    { "id": "c99", "query": "id que não existe" }
+  ]
+}
