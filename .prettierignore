@@ -1,0 +1,6 @@
+pnpm-lock.yaml
+eval/runs/
+data/
+dist/
+coverage/
+CLAUDE.md
