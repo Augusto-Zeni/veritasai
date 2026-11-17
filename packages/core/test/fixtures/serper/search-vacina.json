@@ -1,0 +1,57 @@
+{
+  "searchParameters": {
+    "q": "Ministério da Saúde vacina dengue SUS 2024",
+    "gl": "br",
+    "hl": "pt-br",
+    "type": "search",
+    "num": 10,
+    "engine": "google"
+  },
+  "organic": [
+    {
+      "title": "Vacina contra a dengue é incorporada ao SUS",
+      "link": "https://www.gov.br/saude/pt-br/assuntos/noticias/2023/dezembro/vacina-dengue-sus",
+      "snippet": "O Ministério da Saúde anunciou a incorporação da vacina contra a dengue ao SUS...",
+      "date": "21 de dez. de 2023",
+      "position": 1
+    },
+    {
+      "title": "É falso que vacina da dengue foi suspensa",
+      "link": "https://www.aosfatos.org/noticias/falso-vacina-dengue-suspensa/",
+      "snippet": "Checagem: a vacina segue sendo aplicada...",
+      "position": 2
+    },
+    {
+      "title": "Vacina da dengue: o que se sabe",
+      "link": "https://noticias.exemplo.com.br/saude/vacina-dengue",
+      "snippet": "A notícia original que está sendo verificada...",
+      "position": 3
+    },
+    {
+      "title": "Estadão Verifica: vacina da dengue",
+      "link": "https://www.estadao.com.br/estadao-verifica/vacina-dengue-checagem/",
+      "snippet": "Checagem do Estadão...",
+      "position": 4
+    },
+    {
+      "title": "Estadão: SUS amplia vacinação",
+      "link": "https://www.estadao.com.br/saude/sus-amplia-vacinacao-dengue/",
+      "snippet": "Reportagem do Estadão (não é checagem)...",
+      "position": 5
+    },
+    {
+      "title": "Fiocruz explica a vacina",
+      "link": "https://portal.fiocruz.br/noticia/vacina-dengue",
+      "snippet": "A Fiocruz detalha a eficácia...",
+      "position": 6
+    },
+    {
+      "title": "Agência Brasil: vacinação",
+      "link": "https://agenciabrasil.ebc.com.br/saude/noticia/2024-02/vacinacao-dengue",
+      "snippet": "Vacinação começou em fevereiro de 2024...",
+      "date": "9 de fev. de 2024",
+      "position": 7
+    },
+    { "title": "Link quebrado", "link": "não é uma url", "snippet": "", "position": 8 }
+  ]
+}

@@ -1,3 +1,22 @@
 export * from './config.ts'
 export * from './domain/schemas.ts'
+export * from './errors.ts'
+export * from './usage.ts'
 export * from './services/scoring.ts'
+
+export * from './cache/cache-store.ts'
+export * from './cache/memory-cache.ts'
+export * from './cache/sqlite-cache.ts'
+
+export * from './clients/llm.ts'
+export * from './clients/gemini.ts'
+export * from './clients/search.ts'
+export * from './clients/serper.ts'
+export * from './clients/reader.ts'
+export * from './clients/jina.ts'
+export * from './clients/readability.ts'
+
+export * from './utils/hash.ts'
+export * from './utils/rate-limiter.ts'
+export * from './utils/retry.ts'
+export * from './utils/url.ts'

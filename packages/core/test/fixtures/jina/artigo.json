@@ -1,0 +1,12 @@
+{
+  "code": 200,
+  "status": 20000,
+  "data": {
+    "title": "Governo amplia vacinação contra a dengue",
+    "description": "Notícia de exemplo para testes",
+    "url": "https://noticias.exemplo.com.br/saude/vacina-dengue",
+    "content": "O Ministério da Saúde anunciou nesta segunda-feira (5) a ampliação da vacinação contra a dengue para municípios de 16 estados. Segundo a pasta, 1,2 milhão de doses serão distribuídas até março de 2024. A vacina, produzida pelo laboratório Takeda, é aplicada em duas doses com intervalo de três meses. O público-alvo inicial são crianças e adolescentes de 10 a 14 anos, faixa etária que concentra o maior número de hospitalizações por dengue depois dos idosos. A ministra afirmou que a estratégia será ampliada conforme a disponibilidade de doses.",
+    "publishedTime": "2024-02-05T10:00:00-03:00",
+    "usage": { "tokens": 180 }
+  }
+}
