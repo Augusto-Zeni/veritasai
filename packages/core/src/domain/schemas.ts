@@ -74,11 +74,16 @@ export const RunMetaSchema = z.object({
   latencyMs: z.record(z.string(), z.number().nonnegative()),
   /** Contagem de chamadas por API externa (gemini, serper, jina). */
   apiCalls: z.record(z.string(), z.number().int().nonnegative()),
+  /** Respostas reaproveitadas do cache por API (não geraram chamada nem tokens). */
+  cacheHits: z.record(z.string(), z.number().int().nonnegative()),
   scrapeMethod: ScrapeMethodSchema,
   truncated: z.boolean(),
   trustedDomainsUsed: z.boolean(),
   excludedFactcheckDomains: z.boolean(),
+  /** A verificação inteira veio do cache (nenhuma etapa foi executada). */
   cacheHit: z.boolean(),
+  /** Degradações ocorridas (consulta substituída, página ilegível, afirmação com erro). */
+  warnings: z.array(z.string()),
   timestamp: z.string().datetime(),
 })
 export type RunMeta = z.infer<typeof RunMetaSchema>

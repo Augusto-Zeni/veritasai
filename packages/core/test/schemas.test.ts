@@ -37,6 +37,8 @@ const result = {
     trustedDomainsUsed: false,
     excludedFactcheckDomains: false,
     cacheHit: false,
+    cacheHits: {},
+    warnings: [],
     timestamp: '2026-11-17T12:00:00Z',
   },
 }

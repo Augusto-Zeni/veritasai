@@ -8,8 +8,7 @@
     "./domain": "./src/domain/schemas.ts"
   },
   "scripts": {
-    "typecheck": "tsc -p tsconfig.json",
-    "verify": "tsx src/cli.ts"
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@google/genai": "^3.4.0",

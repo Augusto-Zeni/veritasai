@@ -31,3 +31,7 @@ export * from './services/query-generation.ts'
 export * from './services/search.ts'
 export * from './services/evidence.ts'
 export * from './services/verification.ts'
+export * from './services/explanation.ts'
+
+export * from './pipeline.ts'
+export * from './factory.ts'

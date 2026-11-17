@@ -38,3 +38,24 @@ export class UsageTracker {
     }
   }
 }
+
+/**
+ * Consumo entre dois snapshots (`after - before`). Usado para isolar o custo de
+ * uma notícia quando o mesmo tracker atende várias execuções seguidas.
+ */
+export function diffUsage(before: UsageSnapshot, after: UsageSnapshot): UsageSnapshot {
+  const sub = (a: Record<string, number>, b: Record<string, number>) =>
+    Object.fromEntries(
+      Object.entries(a)
+        .map(([k, v]) => [k, v - (b[k] ?? 0)] as const)
+        .filter(([, v]) => v > 0),
+    )
+  return {
+    tokens: {
+      input: after.tokens.input - before.tokens.input,
+      output: after.tokens.output - before.tokens.output,
+    },
+    apiCalls: sub(after.apiCalls, before.apiCalls),
+    cacheHits: sub(after.cacheHits, before.cacheHits),
+  }
+}
