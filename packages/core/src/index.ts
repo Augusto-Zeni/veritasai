@@ -35,3 +35,4 @@ export * from './services/explanation.ts'
 
 export * from './pipeline.ts'
 export * from './factory.ts'
+export * from './baselines.ts'

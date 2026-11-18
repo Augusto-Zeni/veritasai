@@ -4,14 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "run:eval": "tsx --env-file-if-exists=../.env scripts/run.ts",
-    "metrics": "tsx scripts/metrics.ts",
-    "calibrate": "tsx scripts/calibrate.ts",
-    "sample-claims": "tsx scripts/sample-claims.ts",
-    "kappa": "tsx scripts/kappa.ts",
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@veritasai/core": "workspace:*"
+    "@veritasai/core": "workspace:*",
+    "zod": "^4.6.7"
   }
 }

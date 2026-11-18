@@ -14,11 +14,11 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "verify": "tsx --env-file-if-exists=.env packages/core/src/cli.ts",
-    "eval:run": "pnpm --filter @veritasai/eval run:eval",
-    "eval:metrics": "pnpm --filter @veritasai/eval metrics",
-    "eval:calibrate": "pnpm --filter @veritasai/eval calibrate",
-    "eval:sample-claims": "pnpm --filter @veritasai/eval sample-claims",
-    "eval:kappa": "pnpm --filter @veritasai/eval kappa",
+    "eval:run": "tsx --env-file-if-exists=.env eval/scripts/run.ts",
+    "eval:metrics": "tsx eval/scripts/metrics.ts",
+    "eval:calibrate": "tsx eval/scripts/calibrate.ts",
+    "eval:sample-claims": "tsx eval/scripts/sample-claims.ts",
+    "eval:kappa": "tsx eval/scripts/kappa.ts",
     "lint:fix": "eslint . --fix"
   },
   "devDependencies": {

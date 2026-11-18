@@ -14,6 +14,16 @@ export const NewsVerdictSchema = z.enum(NEWS_VERDICTS)
 export type ClaimLabel = z.infer<typeof ClaimLabelSchema>
 export type NewsVerdict = z.infer<typeof NewsVerdictSchema>
 
+/** Variantes do sistema avaliadas no estudo de ablação. */
+export const VARIANTS = [
+  'full',
+  'no-decomposition',
+  'no-retrieval',
+  'full-no-factcheck-domains',
+] as const
+export const VariantSchema = z.enum(VARIANTS)
+export type Variant = z.infer<typeof VariantSchema>
+
 export const ScrapeMethodSchema = z.enum(['jina', 'readability'])
 export type ScrapeMethod = z.infer<typeof ScrapeMethodSchema>
 
@@ -65,6 +75,7 @@ export const TokenUsageSchema = z.object({
 export type TokenUsage = z.infer<typeof TokenUsageSchema>
 
 export const RunMetaSchema = z.object({
+  variant: VariantSchema,
   model: z.string(),
   promptVersions: z.record(z.string(), z.string()),
   /** Config pública (sem chaves de API) usada nesta execução. */

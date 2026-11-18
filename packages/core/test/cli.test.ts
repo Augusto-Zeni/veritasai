@@ -41,6 +41,7 @@ const result: VerificationResult = {
   verdict: 'VERDADEIRO',
   explanation: 'Explicação.',
   meta: {
+    variant: 'full',
     model: 'gemini-x',
     promptVersions: { verification: '1' },
     config: {},

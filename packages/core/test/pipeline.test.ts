@@ -233,6 +233,26 @@ describe('VerificationPipeline', () => {
     ).toBeUndefined()
   })
 
+  it('modo estrito (avaliação): erro numa afirmação interrompe a notícia', async () => {
+    const llm = scriptedLlm([
+      ...LABELS.slice(0, 3),
+      ['10 a 14 anos', new LlmQuotaError('cota esgotada')],
+    ])
+    const { deps } = makeDeps(llm)
+    await expect(
+      new VerificationPipeline(deps).run(ARTICLE_URL, { strict: true }),
+    ).rejects.toBeInstanceOf(LlmQuotaError)
+  })
+
+  it('registra a variante no meta', async () => {
+    const { deps } = makeDeps(scriptedLlm())
+    expect((await new VerificationPipeline(deps).run(ARTICLE_URL)).meta.variant).toBe(
+      'full-no-factcheck-domains',
+    )
+    const { deps: deps2 } = makeDeps(scriptedLlm(), { excludeFactcheckDomains: false })
+    expect((await new VerificationPipeline(deps2).run(ARTICLE_URL)).meta.variant).toBe('full')
+  })
+
   it('falha ao extrair o texto interrompe com ScrapeError', async () => {
     const { deps } = makeDeps(scriptedLlm())
     await expect(new VerificationPipeline(deps).run('https://outro.site/x')).rejects.toBeInstanceOf(

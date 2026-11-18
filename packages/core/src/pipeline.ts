@@ -69,6 +69,16 @@ export interface RunOptions {
   onEvent?: (event: PipelineEvent) => void
   /** Ignora o cache de verificações (as respostas de LLM/busca continuam cacheadas). */
   force?: boolean
+  /**
+   * Modo avaliação: erro numa afirmação interrompe a notícia (lança o erro) em vez de
+   * virar INSUFICIENTE. Evita que falta de cota contamine as métricas.
+   */
+  strict?: boolean
+}
+
+/** Qualquer variante do sistema (pipeline completo ou baselines). */
+export interface Verifier {
+  run(url: string, options?: RunOptions): Promise<VerificationResult>
 }
 
 /** Campos da config que não alteram o resultado (ficam fora do hash do cache). */
@@ -84,7 +94,7 @@ export function verificationConfigHash(
   return stableHash({ model: deps.model, promptVersions: deps.promptVersions, config })
 }
 
-export class VerificationPipeline {
+export class VerificationPipeline implements Verifier {
   private readonly now: () => Date
   private readonly clock: () => number
 
@@ -168,7 +178,14 @@ export class VerificationPipeline {
       claims.map((claim) =>
         limit(async () => {
           const query = queries.queries.get(claim.id) ?? claim.text
-          const result = await this.processClaim(claim, query, article, timed, warnings)
+          const result = await this.processClaim(
+            claim,
+            query,
+            article,
+            timed,
+            warnings,
+            options.strict ?? false,
+          )
           done++
           emit({
             type: 'claim-done',
@@ -197,6 +214,7 @@ export class VerificationPipeline {
 
     const usage = diffUsage(usageBefore, deps.tracker.snapshot())
     const meta: RunMeta = {
+      variant: deps.excludeFactcheckDomains ? 'full-no-factcheck-domains' : 'full',
       model: deps.model,
       promptVersions: deps.promptVersions,
       config: deps.publicConfig,
@@ -235,6 +253,7 @@ export class VerificationPipeline {
     article: Article,
     timed: <T>(stage: string, fn: () => Promise<T>) => Promise<T>,
     warnings: string[],
+    strict: boolean,
   ): Promise<ClaimResult> {
     const { deps } = this
     let evidences: ClaimResult['evidences'] = []
@@ -248,6 +267,7 @@ export class VerificationPipeline {
       const verdict = await timed('verification', () => deps.verification.verify(claim, evidences))
       return { claim, query, evidences, ...verdict }
     } catch (err) {
+      if (strict) throw err
       const message = err instanceof Error ? err.message : String(err)
       warnings.push(`${claim.id}: ${message}`)
       return {

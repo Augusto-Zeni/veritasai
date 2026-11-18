@@ -26,6 +26,7 @@ const result = {
   verdict: 'VERDADEIRO',
   explanation: '1 de 1 afirmações confirmadas.',
   meta: {
+    variant: 'full',
     model: 'gemini-x',
     promptVersions: { 'claim-extraction': '1' },
     config: {},
