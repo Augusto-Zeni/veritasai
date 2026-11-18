@@ -27,7 +27,7 @@ import type { ClaimExtractionService } from './services/claim-extraction.ts'
 import type { EvidenceService } from './services/evidence.ts'
 import { buildExplanation } from './services/explanation.ts'
 import type { QueryGenerationService } from './services/query-generation.ts'
-import type { ScraperService } from './services/scraper.ts'
+import type { ProvidedText, ScraperService } from './services/scraper.ts'
 import { computeScore } from './services/scoring.ts'
 import type { SearchService } from './services/search.ts'
 import type { VerificationService } from './services/verification.ts'
@@ -74,6 +74,11 @@ export interface RunOptions {
    * virar INSUFICIENTE. Evita que falta de cota contamine as métricas.
    */
   strict?: boolean
+  /**
+   * Modo avaliação: usa este texto em vez de ler a URL (conteúdo de rede social, que não
+   * é extraível). A URL continua identificando a origem (domínio excluído da busca).
+   */
+  providedText?: ProvidedText
 }
 
 /** Qualquer variante do sistema (pipeline completo ou baselines). */
@@ -107,7 +112,10 @@ export class VerificationPipeline implements Verifier {
     const { deps } = this
     const emit = options.onEvent ?? (() => {})
     const url = normalizeUrl(rawUrl)
-    const urlHash = sha256(url)
+    // Com texto fornecido, o texto entra na chave: editar o dataset invalida o cache.
+    const urlHash = options.providedText
+      ? sha256(`${url}\n${sha256(options.providedText.text)}`)
+      : sha256(url)
     const configHash = verificationConfigHash(deps)
 
     if (deps.cache && !options.force) {
@@ -140,7 +148,9 @@ export class VerificationPipeline implements Verifier {
     }
 
     // 1. Texto da notícia (falha aqui interrompe: não há o que verificar).
-    const scraped = await stage('scrape', () => timed('scrape', () => deps.scraper.scrape(url)))
+    const scraped = await stage('scrape', () =>
+      timed('scrape', () => deps.scraper.scrape(url, options.providedText)),
+    )
     const { article } = scraped
     emit({
       type: 'article',

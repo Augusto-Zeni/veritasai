@@ -100,7 +100,7 @@ abstract class BaselineVerifier implements Verifier {
     }
 
     emit({ type: 'stage', stage: 'scrape', status: 'start' })
-    const scraped = await timed('scrape', () => this.base.scraper.scrape(url))
+    const scraped = await timed('scrape', () => this.base.scraper.scrape(url, options.providedText))
     emit({ type: 'stage', stage: 'scrape', status: 'done' })
 
     const judged = await this.judge(scraped, timed, emit)

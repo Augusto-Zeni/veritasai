@@ -181,7 +181,10 @@ for (const [i, row] of pending.entries()) {
   const prefix = `[${i + 1}/${pending.length}] ${row.id}`
   process.stderr.write(`${prefix} ${row.url}\n`)
   try {
-    const result = await handle.verifier.run(row.url, { strict: true })
+    const result = await handle.verifier.run(row.url, {
+      strict: true,
+      ...(row.texto ? { providedText: { text: row.texto, title: row.titulo } } : {}),
+    })
     const record: RunRecord = {
       id: row.id,
       url: row.url,

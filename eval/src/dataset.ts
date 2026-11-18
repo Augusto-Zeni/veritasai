@@ -19,18 +19,39 @@ export const DATASET_COLUMNS = [
   'split',
 ] as const
 
-export const DatasetRowSchema = z.object({
-  id: z.string().trim().min(1),
-  url: z.string().trim().url(),
-  titulo: z.string().trim(),
-  data_publicacao: z.string().trim(),
-  tema: z.string().trim(),
-  agencia: z.string().trim(),
-  url_checagem: z.string().trim().url(),
-  rotulo_agencia: z.string().trim(),
-  rotulo_mapeado: z.string().trim().toUpperCase().pipe(NewsVerdictSchema),
-  split: z.enum(SPLITS),
-})
+/** Colunas opcionais (podem faltar no cabeçalho). */
+export const OPTIONAL_COLUMNS = ['texto'] as const
+
+/** Origem fictícia (TLD reservado .invalid) para linhas só com `texto` e sem URL conhecida. */
+export const TEXT_ONLY_HOST = 'texto.invalid'
+
+export const DatasetRowSchema = z
+  .object({
+    id: z.string().trim().min(1),
+    /** Notícia original; pode ficar vazia quando houver `texto`. */
+    url: z.string().trim().url().or(z.literal('')),
+    /**
+     * Conteúdo verificado, transcrito da checagem, quando a origem não é extraível
+     * (post de rede social, vídeo). O pipeline usa este texto em vez de ler a URL.
+     */
+    texto: z.string().trim().optional().default(''),
+    titulo: z.string().trim(),
+    data_publicacao: z.string().trim(),
+    tema: z.string().trim(),
+    agencia: z.string().trim(),
+    url_checagem: z.string().trim().url(),
+    rotulo_agencia: z.string().trim(),
+    rotulo_mapeado: z.string().trim().toUpperCase().pipe(NewsVerdictSchema),
+    split: z.enum(SPLITS),
+  })
+  .refine((r) => r.url !== '' || r.texto !== '', {
+    message: 'informe url ou texto',
+    path: ['url'],
+  })
+  .transform((r) => ({
+    ...r,
+    url: r.url || `https://${TEXT_ONLY_HOST}/${encodeURIComponent(r.id)}`,
+  }))
 export type DatasetRow = z.infer<typeof DatasetRowSchema>
 
 export interface Dataset {
@@ -70,6 +91,9 @@ export function parseDataset(text: string): Dataset {
 
   const warnings: string[] = []
   for (const row of rows) {
+    if (row.texto && row.texto.length < 80) {
+      warnings.push(`${row.id}: texto muito curto (${row.texto.length} caracteres)`)
+    }
     if (matchesAnyDomain(row.url, FACTCHECK_DOMAINS)) {
       warnings.push(
         `${row.id}: a coluna url aponta para uma agência de checagem; deveria ser a notícia original`,

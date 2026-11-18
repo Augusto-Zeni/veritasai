@@ -24,7 +24,8 @@ export const VARIANTS = [
 export const VariantSchema = z.enum(VARIANTS)
 export type Variant = z.infer<typeof VariantSchema>
 
-export const ScrapeMethodSchema = z.enum(['jina', 'readability'])
+/** `texto`: o texto foi fornecido pronto (conteúdo de rede social transcrito no dataset). */
+export const ScrapeMethodSchema = z.enum(['jina', 'readability', 'texto'])
 export type ScrapeMethod = z.infer<typeof ScrapeMethodSchema>
 
 export const ArticleSchema = z.object({

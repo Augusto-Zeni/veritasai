@@ -17,7 +17,7 @@ classes (`rotulo_mapeado`) segundo a tabela abaixo.
 | Lupa             | Verdadeiro                                         | VERDADEIRO  |                                                                                 |
 | Lupa             | Verdadeiro, mas                                    | IMPRECISO   | Verdadeiro com ressalva relevante                                               |
 | Lupa             | Exagerado / Subestimado                            | IMPRECISO   | Número ou dimensão distorcidos                                                  |
-| Lupa             | Contraditório                                      | IMPRECISO   |                                                                                 |
+| Lupa             | Contraditório                                      | **excluir** | Contradiz fala anterior do próprio autor, não o fato — ver nota 9               |
 | Lupa             | Falso                                              | FALSO       |                                                                                 |
 | Lupa             | Insustentável                                      | **excluir** | Não há dados públicos para decidir — ver nota 1                                 |
 | Aos Fatos        | Verdadeiro                                         | VERDADEIRO  |                                                                                 |
@@ -59,15 +59,39 @@ classes (`rotulo_mapeado`) segundo a tabela abaixo.
 
 ## Formato do `noticias.csv`
 
-| Coluna            | Conteúdo                                            |
-| ----------------- | --------------------------------------------------- |
-| `id`              | identificador único (ex.: `N001`)                   |
-| `url`             | notícia original (acessível publicamente)           |
-| `titulo`          | título da notícia                                   |
-| `data_publicacao` | AAAA-MM-DD                                          |
-| `tema`            | ex.: saúde, política, economia, ciência, clima      |
-| `agencia`         | agência que checou                                  |
-| `url_checagem`    | link da checagem                                    |
-| `rotulo_agencia`  | rótulo exatamente como a agência publicou           |
-| `rotulo_mapeado`  | `VERDADEIRO`, `FALSO` ou `IMPRECISO` (tabela acima) |
-| `split`           | `calibracao` ou `teste`                             |
+| Coluna            | Conteúdo                                                                      |
+| ----------------- | ----------------------------------------------------------------------------- |
+| `id`              | identificador único (ex.: `N001`)                                             |
+| `url`             | notícia original (acessível publicamente); pode ficar vazia se houver `texto` |
+| `titulo`          | título da notícia                                                             |
+| `data_publicacao` | AAAA-MM-DD                                                                    |
+| `tema`            | ex.: saúde, política, economia, ciência, clima                                |
+| `agencia`         | agência que checou                                                            |
+| `url_checagem`    | link da checagem                                                              |
+| `rotulo_agencia`  | rótulo exatamente como a agência publicou                                     |
+| `rotulo_mapeado`  | `VERDADEIRO`, `FALSO` ou `IMPRECISO` (tabela acima)                           |
+| `split`           | `calibracao` ou `teste`                                                       |
+| `texto`           | opcional: conteúdo verificado transcrito (ver nota 5)                         |
+
+## Notas adicionadas em 2026-11-18 (montagem do dataset)
+
+5. **Coluna `texto`.** Em 2026, quase todas as checagens tratam de vídeos e posts de redes
+   sociais, que não são extraíveis por URL. Nesses casos, `texto` recebe o conteúdo viral **como
+   circulou**, transcrito da própria checagem (a fala, a legenda do post ou a manchete), sem
+   nenhuma parte da conclusão da agência. O pipeline usa esse texto no lugar da extração
+   (`scrapeMethod = texto`). Se o link do post for conhecido, ele vai em `url` (o domínio é
+   excluído da busca); se não, `url` fica vazia e o sistema usa uma origem fictícia
+   `https://texto.invalid/<id>`.
+6. **Falas checadas (Lupa).** As checagens de debates, sabatinas e entrevistas avaliam cada fala
+   separadamente. Cada fala pode virar um item, com `texto` = quem falou, onde e quando + a fala
+   entre aspas, e `rotulo_agencia` = o selo daquela fala.
+7. **Mudanças de selos.** O Comprova aboliu as etiquetas (Falso, Enganoso, Comprovado...) em
+   junho de 2025: peças posteriores não entram no dataset, a menos que a conclusão seja
+   inequívoca, e nesse caso `rotulo_agencia` registra a frase da conclusão. Em 2026 o Aos Fatos
+   publica praticamente só o selo FALSO (inclusive para conteúdo antigo recirculado como atual).
+8. **Equilíbrio de formato.** Falas e posts têm estilos diferentes. Para que o sistema não acerte
+   a classe pelo formato, cada classe deve misturar falas, posts e notícias de sites em proporções
+   parecidas, e a proporção final de cada formato por classe deve ser relatada no TCC.
+9. **Contraditório (Lupa)** indica que a fala contradiz outra declaração do mesmo autor, não que
+   o fato esteja distorcido. Como o sistema verifica o fato com evidências externas, esses itens
+   ficam fora do dataset (decisão de 2026-11-18; antes eram mapeados para IMPRECISO).

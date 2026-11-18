@@ -209,6 +209,28 @@ describe('VerificationPipeline', () => {
     expect(llm.requests.length).toBeGreaterThan(calls)
   })
 
+  it('com texto fornecido, não lê a página e o texto entra na chave do cache', async () => {
+    const llm = scriptedLlm()
+    const { deps, reader } = makeDeps(llm)
+    const pipeline = new VerificationPipeline(deps)
+    const origem = 'https://texto.invalid/N1'
+    const first = await pipeline.run(origem, { providedText: { text: jina.data.content } })
+    expect(reader.reads).not.toContain(origem)
+    expect(first.meta.scrapeMethod).toBe('texto')
+    expect(first.article.domain).toBe('texto.invalid')
+    const calls = llm.requests.length
+
+    const same = await pipeline.run(origem, { providedText: { text: jina.data.content } })
+    expect(same.meta.cacheHit).toBe(true)
+    expect(llm.requests).toHaveLength(calls)
+
+    const edited = await pipeline.run(origem, {
+      providedText: { text: `${jina.data.content} (revisado)` },
+    })
+    expect(edited.meta.cacheHit).toBe(false)
+    expect(llm.requests.length).toBeGreaterThan(calls)
+  })
+
   it('falha numa afirmação vira INSUFICIENTE com motivo, sem derrubar a notícia, e não é cacheada', async () => {
     const llm = scriptedLlm([
       ...LABELS.slice(0, 3),

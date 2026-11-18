@@ -24,6 +24,39 @@ const row = (
   return DATASET_COLUMNS.map((c) => values[c]).join(',')
 }
 
+describe('parseDataset — coluna texto', () => {
+  const headerTexto = `${header},texto`
+  const texto =
+    'Post afirma que o governo vai confiscar a poupança de todos os brasileiros em 2026.'
+  it('aceita linha só com texto e gera uma origem fictícia única', () => {
+    const ds = parseDataset(
+      [
+        headerTexto,
+        `${row('N1', { url: '' })},${texto}`,
+        `${row('N2', { url: '' })},${texto} De novo.`,
+        `${row('N3')},`,
+      ].join('\n'),
+    )
+    expect(ds.rows.map((r) => r.url)).toEqual([
+      'https://texto.invalid/N1',
+      'https://texto.invalid/N2',
+      'https://site.com.br/N3',
+    ])
+    expect(ds.rows[0]!.texto).toBe(texto)
+    expect(ds.rows[2]!.texto).toBe('')
+  })
+  it('exige url ou texto e avisa sobre texto curto', () => {
+    expect(() => parseDataset([headerTexto, `${row('N1', { url: '' })},`].join('\n'))).toThrow(
+      /url ou texto/,
+    )
+    const ds = parseDataset([headerTexto, `${row('N1', { url: '' })},curto`].join('\n'))
+    expect(ds.warnings.join()).toMatch(/texto muito curto/)
+  })
+  it('continua aceitando CSV sem a coluna texto', () => {
+    expect(parseDataset([header, row('N1')].join('\n')).rows[0]!.texto).toBe('')
+  })
+})
+
 describe('parseDataset', () => {
   it('lê e valida as linhas; normaliza o rótulo para maiúsculas', () => {
     const ds = parseDataset(

@@ -34,6 +34,25 @@ describe('ScraperService', () => {
     })
   })
 
+  it('com texto fornecido, não lê a URL e marca o método como texto', async () => {
+    const reader = new FakeReader({})
+    const out = await new ScraperService(reader, { maxArticleChars: 1000 }).scrape(
+      'https://www.instagram.com/p/abc/',
+      { text: '  Post diz que a vacina foi proibida.  ', title: 'Post sobre vacina' },
+    )
+    expect(reader.reads).toEqual([])
+    expect(out).toMatchObject({
+      article: {
+        url: 'https://instagram.com/p/abc',
+        domain: 'instagram.com',
+        title: 'Post sobre vacina',
+        text: 'Post diz que a vacina foi proibida.',
+      },
+      method: 'texto',
+      truncated: false,
+    })
+  })
+
   it('trunca em maxArticleChars e registra', async () => {
     const text = 'Frase de teste. '.repeat(100).trim()
     const reader = new FakeReader({ [URL_LIMPA]: { url: URL_LIMPA, method: 'readability', text } })
