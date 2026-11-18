@@ -4,8 +4,8 @@
 flowchart LR
   subgraph Entradas
     CLI["CLI<br/>pnpm verify"]
-    API["API Fastify<br/>(passo 6)"]
-    EVAL["Avaliação<br/>eval/scripts (passo 5)"]
+    API["API Fastify + SSE<br/>apps/api (JobManager)"]
+    EVAL["Avaliação<br/>eval/scripts"]
   end
 
   subgraph Core["packages/core"]
