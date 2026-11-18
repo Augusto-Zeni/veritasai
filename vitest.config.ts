@@ -2,7 +2,7 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
-    projects: ['packages/*', 'apps/api', 'eval'],
+    projects: ['packages/*', 'apps/api', 'apps/web', 'eval'],
     passWithNoTests: true,
   },
 })

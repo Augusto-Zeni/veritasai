@@ -1,1 +1,214 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
+@import '@fontsource-variable/inter';
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Tokens de cor (oklch). Superfícies com leve tom azulado e contraste suave,
+ * texto sempre com contraste AA. Cores de veredito próprias para cada tema.
+ */
+:root {
+  --radius: 0.875rem;
+
+  --background: oklch(0.985 0.003 264);
+  --foreground: oklch(0.22 0.02 264);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.02 264);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.02 264);
+  --primary: oklch(0.5 0.17 268);
+  --primary-foreground: oklch(0.985 0.005 268);
+  --secondary: oklch(0.955 0.008 264);
+  --secondary-foreground: oklch(0.27 0.03 264);
+  --muted: oklch(0.955 0.006 264);
+  --muted-foreground: oklch(0.48 0.02 264);
+  --accent: oklch(0.95 0.02 268);
+  --accent-foreground: oklch(0.3 0.08 268);
+  --destructive: oklch(0.55 0.2 25);
+  --border: oklch(0.91 0.008 264);
+  --input: oklch(0.88 0.01 264);
+  --ring: oklch(0.6 0.15 268);
+
+  --success: oklch(0.52 0.13 155);
+  --success-soft: oklch(0.96 0.035 155);
+  --success-strong: oklch(0.38 0.1 155);
+  --danger: oklch(0.55 0.19 25);
+  --danger-soft: oklch(0.965 0.025 25);
+  --danger-strong: oklch(0.43 0.16 25);
+  --warning: oklch(0.7 0.15 70);
+  --warning-soft: oklch(0.97 0.04 85);
+  --warning-strong: oklch(0.45 0.1 60);
+  --neutral: oklch(0.6 0.02 264);
+  --neutral-soft: oklch(0.955 0.006 264);
+  --neutral-strong: oklch(0.42 0.02 264);
+
+  --glow: oklch(0.85 0.08 268 / 0.55);
+}
+
+.dark {
+  --background: oklch(0.165 0.012 264);
+  --foreground: oklch(0.94 0.008 264);
+  --card: oklch(0.2 0.014 264);
+  --card-foreground: oklch(0.94 0.008 264);
+  --popover: oklch(0.22 0.014 264);
+  --popover-foreground: oklch(0.94 0.008 264);
+  --primary: oklch(0.74 0.12 268);
+  --primary-foreground: oklch(0.2 0.04 268);
+  --secondary: oklch(0.25 0.014 264);
+  --secondary-foreground: oklch(0.92 0.008 264);
+  --muted: oklch(0.24 0.012 264);
+  --muted-foreground: oklch(0.72 0.015 264);
+  --accent: oklch(0.27 0.03 268);
+  --accent-foreground: oklch(0.92 0.03 268);
+  --destructive: oklch(0.68 0.18 22);
+  --border: oklch(1 0 0 / 0.09);
+  --input: oklch(1 0 0 / 0.13);
+  --ring: oklch(0.65 0.12 268);
+
+  --success: oklch(0.74 0.14 155);
+  --success-soft: oklch(0.3 0.05 155 / 0.45);
+  --success-strong: oklch(0.84 0.12 155);
+  --danger: oklch(0.7 0.17 22);
+  --danger-soft: oklch(0.3 0.07 22 / 0.45);
+  --danger-strong: oklch(0.83 0.1 22);
+  --warning: oklch(0.8 0.14 80);
+  --warning-soft: oklch(0.32 0.05 80 / 0.45);
+  --warning-strong: oklch(0.87 0.11 85);
+  --neutral: oklch(0.65 0.02 264);
+  --neutral-soft: oklch(0.27 0.012 264);
+  --neutral-strong: oklch(0.82 0.012 264);
+
+  --glow: oklch(0.45 0.12 268 / 0.35);
+}
+
+@theme inline {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: calc(var(--radius) - 2px);
+  --radius-xl: var(--radius);
+  --radius-2xl: calc(var(--radius) + 6px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-success-strong: var(--success-strong);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-strong: var(--danger-strong);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-strong: var(--warning-strong);
+  --color-neutral: var(--neutral);
+  --color-neutral-soft: var(--neutral-soft);
+  --color-neutral-strong: var(--neutral-strong);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    color-scheme: light;
+    -webkit-tap-highlight-color: transparent;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: color-mix(in oklch, var(--primary) 25%, transparent);
+  }
+}
+
+/* Brilho suave atrás do conteúdo (decorativo). */
+.app-glow {
+  background:
+    radial-gradient(60rem 30rem at 50% -10rem, var(--glow), transparent 70%),
+    radial-gradient(
+      30rem 20rem at 100% 0,
+      color-mix(in oklch, var(--glow) 50%, transparent),
+      transparent 70%
+    );
+}
+
+/* Troca de página e de tema com a View Transitions API (quando o navegador suporta). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 260ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+::view-transition-old(root) {
+  animation-name: vt-fade-out;
+}
+::view-transition-new(root) {
+  animation-name: vt-fade-in;
+}
+@keyframes vt-fade-out {
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+@keyframes vt-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* Troca de tema: círculo que se expande a partir do botão. */
+html.theme-switching::view-transition-old(root),
+html.theme-switching::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html.theme-switching::view-transition-new(root) {
+  animation: theme-reveal 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0 at var(--reveal-x, 100%) var(--reveal-y, 0));
+  }
+  to {
+    clip-path: circle(var(--reveal-r, 150vmax) at var(--reveal-x, 100%) var(--reveal-y, 0));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
