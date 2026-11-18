@@ -51,7 +51,11 @@ export class FallbackReader implements ReaderClient {
       return result
     } catch (err) {
       if (primaryResult && primaryResult.text.length > 0) return primaryResult
-      throw new ScrapeError(`Não foi possível extrair o texto de ${url}: ${reason}`, { cause: err })
+      const fallbackReason = err instanceof Error ? err.message : String(err)
+      throw new ScrapeError(
+        `Não foi possível extrair o texto de ${url}: ${reason}; alternativa: ${fallbackReason}`,
+        { cause: err },
+      )
     }
   }
 }

@@ -1,5 +1,5 @@
 import { Readability } from '@mozilla/readability'
-import { JSDOM, VirtualConsole } from 'jsdom'
+import { parseHTML } from 'linkedom'
 import type { CacheStore } from '../cache/cache-store.ts'
 import { cachedCall } from '../cache/cached-call.ts'
 import { ScrapeError } from '../errors.ts'
@@ -48,25 +48,22 @@ export class ReadabilityReader implements ReaderClient {
 
 /** Extração pura (sem rede), testável com HTML gravado. */
 export function extractWithReadability(html: string, url: string): ReadResult {
-  // VirtualConsole vazio: não polui o log com erros de CSS da página.
-  const dom = new JSDOM(html, { url, virtualConsole: new VirtualConsole() })
-  try {
-    const article = new Readability(dom.window.document).parse()
-    const text = article?.textContent
-      ?.replace(/[ \t]+/g, ' ')
-      .replace(/\n\s*\n+/g, '\n\n')
-      .trim()
-    if (!article || !text)
-      throw new ScrapeError(`Readability: nenhum conteúdo encontrado em ${url}`)
-    const publishedAt = article.publishedTime ?? undefined
-    return {
-      url,
-      text,
-      method: 'readability',
-      ...(article.title ? { title: article.title } : {}),
-      ...(publishedAt ? { publishedAt } : {}),
-    }
-  } finally {
-    dom.window.close()
+  // linkedom em vez de jsdom: o jsdom 31 carrega o próprio undici, que substitui o
+  // dispatcher global e quebra o fetch nativo do Node (sem descompressão nem
+  // redirecionamentos). Ver docs/diario-de-desenvolvimento.md (2026-11-18).
+  const { document } = parseHTML(html)
+  const article = new Readability(document).parse()
+  const text = article?.textContent
+    ?.replace(/[ \t]+/g, ' ')
+    .replace(/\n\s*\n+/g, '\n\n')
+    .trim()
+  if (!article || !text) throw new ScrapeError(`Readability: nenhum conteúdo encontrado em ${url}`)
+  const publishedAt = article.publishedTime ?? undefined
+  return {
+    url,
+    text,
+    method: 'readability',
+    ...(article.title ? { title: article.title } : {}),
+    ...(publishedAt ? { publishedAt } : {}),
   }
 }
