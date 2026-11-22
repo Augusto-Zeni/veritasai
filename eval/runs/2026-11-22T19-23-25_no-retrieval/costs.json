@@ -1,0 +1,34 @@
+{
+  "items": 45,
+  "verificationCacheHits": 0,
+  "tokens": {
+    "input": 14393,
+    "output": 28916,
+    "meanInputPerItem": 320,
+    "meanOutputPerItem": 643
+  },
+  "apiCalls": {
+    "total": {
+      "gemini": 45
+    },
+    "meanPerItem": {
+      "gemini": 1
+    }
+  },
+  "responseCacheHits": {},
+  "latencyMs": {
+    "scrape": {
+      "mean": 0,
+      "p95": 0
+    },
+    "verification": {
+      "mean": 9214,
+      "p95": 15890
+    },
+    "total": {
+      "mean": 9214,
+      "p95": 15890
+    }
+  },
+  "note": "Respostas vindas do cache não geram chamadas nem tokens. Para medir o custo real por notícia, use uma execução feita com o cache vazio (ou só as notícias sem cacheHits)."
+}

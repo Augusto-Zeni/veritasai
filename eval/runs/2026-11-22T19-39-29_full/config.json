@@ -1,0 +1,44 @@
+{
+  "variant": "full",
+  "split": "calibracao",
+  "dataset": {
+    "path": "eval/dataset/noticias.csv",
+    "sha256": "6e0f148654b303f095c613aab52567074e806ee5ee657dd93441a25c87819628",
+    "items": 60
+  },
+  "model": "gemini-3.8-flash",
+  "promptVersions": {
+    "claim-extraction": "2",
+    "query-generation": "1",
+    "verification": "1"
+  },
+  "config": {
+    "geminiModel": "gemini-3.8-flash",
+    "llmRpm": 60,
+    "llmRpd": 5000,
+    "maxArticleChars": 20000,
+    "maxClaims": 10,
+    "searchTopK": 5,
+    "evidencePages": 3,
+    "snippetsPerPage": 3,
+    "minArticleChars": 500,
+    "excludeFactcheckDomains": false,
+    "useTrustedDomains": false,
+    "cachePath": "./data/cache.sqlite",
+    "scoring": {
+      "coverageMin": 0.5,
+      "trueMin": 0.5,
+      "falseMax": -0.3
+    }
+  },
+  "git": {
+    "commit": "e4bd1ec8e33f139be3199ca88131335286242903",
+    "dirty": true
+  },
+  "node": "v26.0.0",
+  "startedAt": "2026-11-22T19:39:29.897Z",
+  "args": {
+    "variant": "full",
+    "split": "calibracao"
+  }
+}

@@ -27,6 +27,7 @@ export const DEFAULT_SCORING_THRESHOLDS: Readonly<ScoringThresholds> = Object.fr
  * a busca os exclui para evitar vazamento de gabarito na avaliação.
  */
 export const FACTCHECK_DOMAINS: readonly string[] = Object.freeze([
+  'agencialupa.org',
   'lupa.uol.com.br',
   'piaui.folha.uol.com.br',
   'aosfatos.org',

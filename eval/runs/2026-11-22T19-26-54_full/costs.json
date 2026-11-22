@@ -1,0 +1,65 @@
+{
+  "items": 15,
+  "verificationCacheHits": 4,
+  "tokens": {
+    "input": 97661,
+    "output": 40074,
+    "meanInputPerItem": 6511,
+    "meanOutputPerItem": 2672
+  },
+  "apiCalls": {
+    "total": {
+      "gemini": 76,
+      "serper": 46,
+      "jina": 135,
+      "readability": 8
+    },
+    "meanPerItem": {
+      "gemini": 5.07,
+      "serper": 3.07,
+      "jina": 9,
+      "readability": 0.53
+    }
+  },
+  "responseCacheHits": {
+    "jina": 5,
+    "gemini": 3,
+    "serper": 3,
+    "readability": 2
+  },
+  "latencyMs": {
+    "scrape": {
+      "mean": 0,
+      "p95": 0
+    },
+    "claimExtraction": {
+      "mean": 7596,
+      "p95": 11710
+    },
+    "queryGeneration": {
+      "mean": 7108,
+      "p95": 9880
+    },
+    "search": {
+      "mean": 3548,
+      "p95": 6731
+    },
+    "evidence": {
+      "mean": 38113,
+      "p95": 81012
+    },
+    "verification": {
+      "mean": 25455,
+      "p95": 50873
+    },
+    "scoring": {
+      "mean": 0,
+      "p95": 0
+    },
+    "total": {
+      "mean": 43807,
+      "p95": 68077
+    }
+  },
+  "note": "Respostas vindas do cache não geram chamadas nem tokens. Para medir o custo real por notícia, use uma execução feita com o cache vazio (ou só as notícias sem cacheHits)."
+}

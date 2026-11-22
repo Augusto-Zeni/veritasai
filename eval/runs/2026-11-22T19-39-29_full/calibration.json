@@ -1,0 +1,60 @@
+{
+  "variant": "full",
+  "split": "calibracao",
+  "items": 15,
+  "grid": {
+    "coverageMin": [
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8
+    ],
+    "trueMin": [
+      0,
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9
+    ],
+    "falseMax": [
+      -0.9,
+      -0.8,
+      -0.7,
+      -0.6,
+      -0.5,
+      -0.4,
+      -0.3,
+      -0.2,
+      -0.1,
+      0
+    ]
+  },
+  "best": {
+    "thresholds": {
+      "coverageMin": 0.5,
+      "trueMin": 0.5,
+      "falseMax": -0.3
+    },
+    "macroF1": 0.4026936026936027,
+    "accuracy": 0.4
+  },
+  "defaults": {
+    "thresholds": {
+      "coverageMin": 0.5,
+      "trueMin": 0.5,
+      "falseMax": -0.3
+    },
+    "macroF1": 0.4026936026936027,
+    "accuracy": 0.4
+  },
+  "evaluated": 700,
+  "ties": 160
+}

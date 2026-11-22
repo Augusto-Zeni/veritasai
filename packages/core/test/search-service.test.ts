@@ -40,6 +40,16 @@ describe('SearchService', () => {
     expect(out.map((r) => r.domain)).toEqual(['blog.qualquer.com', 'gov.br'])
   })
 
+  it('com excludeFactcheckDomains, exclui o domínio atual da Lupa (agencialupa.org)', async () => {
+    const client = new FakeSearch([
+      searchResult('https://www.agencialupa.org/checagem/2026/08/06/x/'),
+      searchResult('https://blog.qualquer.com/c'),
+    ])
+    const service = new SearchService(client, { ...base, excludeFactcheckDomains: true })
+    const out = await service.search('q', 'texto.invalid')
+    expect(out.map((r) => r.domain)).toEqual(['blog.qualquer.com'])
+  })
+
   it('com useTrustedDomains, coloca domínios confiáveis primeiro sem perder os demais', async () => {
     const service = new SearchService(new FakeSearch(results), { ...base, useTrustedDomains: true })
     const out = await service.search('q', 'noticias.exemplo.com.br')

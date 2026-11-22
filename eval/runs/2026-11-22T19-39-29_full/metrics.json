@@ -1,0 +1,56 @@
+{
+  "variant": "full",
+  "split": "calibracao",
+  "datasetItems": 15,
+  "failed": 0,
+  "thresholds": null,
+  "n": 15,
+  "accuracy": 0.4,
+  "macroF1": 0.4026936026936027,
+  "perClass": {
+    "VERDADEIRO": {
+      "precision": 0.3333333333333333,
+      "recall": 0.4,
+      "f1": 0.3636363636363636,
+      "support": 5
+    },
+    "FALSO": {
+      "precision": 0.4,
+      "recall": 0.4,
+      "f1": 0.4000000000000001,
+      "support": 5
+    },
+    "IMPRECISO": {
+      "precision": 0.5,
+      "recall": 0.4,
+      "f1": 0.4444444444444445,
+      "support": 5
+    }
+  },
+  "confusion": {
+    "VERDADEIRO": {
+      "VERDADEIRO": 2,
+      "FALSO": 1,
+      "IMPRECISO": 2
+    },
+    "FALSO": {
+      "VERDADEIRO": 3,
+      "FALSO": 2,
+      "IMPRECISO": 0
+    },
+    "IMPRECISO": {
+      "VERDADEIRO": 1,
+      "FALSO": 2,
+      "IMPRECISO": 2
+    }
+  },
+  "references": {
+    "majorityClass": {
+      "label": "VERDADEIRO",
+      "accuracy": 0.3333333333333333
+    },
+    "uniformRandom": 0.3333333333333333,
+    "humans": 0.6,
+    "ghadiri2022": 0.7
+  }
+}
