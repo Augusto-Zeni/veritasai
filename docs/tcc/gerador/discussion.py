@@ -70,10 +70,12 @@ def texts(R, D):
         f"no nível do acaso; as variantes sem decomposição ({pct(acc(nodec))}) e sem recuperação ({pct(acc(noret))}) "
         "o superaram, mas nenhuma diferença entre variantes foi estatisticamente significativa (teste de McNemar), "
         "e a hipótese de que a decomposição melhora o veredito não foi confirmada. A análise dos erros mostrou que o "
-        "pipeline raramente inverte a verdade e que seus erros se concentram na classe intermediária, por excesso "
-        "de cautela e pela dificuldade de distinguir exagero de falsidade; que a variante sem decomposição acerta "
+        "pipeline raramente inverte a verdade e que seus erros se concentram na classe intermediária, pela falta "
+        "de evidência conclusiva para muitas afirmações e pela dificuldade de distinguir exagero de falsidade; que a variante sem decomposição acerta "
         "sobretudo por responder IMPRECISO na maioria dos casos; e que o LLM sem recuperação classificou como falsas, "
-        "por considerá-las \u201cfuturas\u201d, declarações posteriores ao seu corte de conhecimento. O trabalho "
+        "por considerá-las \u201cfuturas\u201d, declarações posteriores ao seu corte de conhecimento. No nível da "
+        "afirmação, a concordância entre o verificador e a rotulação manual cega do autor foi moderada (Kappa de "
+        f"Cohen de {num(K['kappa'], 2) if K else '–'}). O trabalho "
         "contribui com um sistema reprodutível e transparente, um protocolo de avaliação com controle de vazamento "
         "de gabarito e evidências sobre os limites dessa abordagem em português.")
     T["abstract"] = (
@@ -92,10 +94,11 @@ def texts(R, D):
         f"decomposition ({acc(nodec) * 100:.1f}%) and without retrieval ({acc(noret) * 100:.1f}%) scored higher, but no "
         "difference between variants was statistically significant (McNemar's test), and the hypothesis that "
         "decomposition improves the verdict was not confirmed. Error analysis showed that the pipeline rarely "
-        "inverts the truth and that its errors concentrate on the intermediate class, due to excessive caution and "
-        "the difficulty of telling exaggeration from falsehood; that the variant without decomposition succeeds "
+        "inverts the truth and that its errors concentrate on the intermediate class, due to the lack of conclusive "
+        "evidence for many claims and the difficulty of telling exaggeration from falsehood; that the variant without decomposition succeeds "
         "mostly by answering INACCURATE in most cases; and that the LLM without retrieval labeled statements made "
-        "after its knowledge cutoff as false for being \u201cin the future\u201d. The work contributes a reproducible "
+        "after its knowledge cutoff as false for being \u201cin the future\u201d. At the claim level, agreement between "
+        f"the verifier and the author's blind manual labeling was moderate (Cohen's kappa of {(K or {}).get('kappa', 0):.2f}). The work contributes a reproducible "
         "and transparent system, an evaluation protocol that controls for answer leakage, and evidence on the limits "
         "of this approach in Portuguese.")
 
@@ -186,9 +189,12 @@ def texts(R, D):
         f"de US$ {num(cost_item(full), 4)} por item no pipeline completo, cerca de R$ {num(cost_item(full) * 5.4, 2)} "
         f"ao câmbio de R$ 5,40. As quatro variantes, no conjunto de teste e excluídas as respostas servidas pelo "
         f"cache, consumiram cerca de {round(total_tokens_in / 1000)} mil *tokens* de entrada e "
-        f"{round(total_tokens_out / 1000)} mil de saída, aproximadamente US$ {num(total_cost, 2)}. Os valores efetivamente cobrados dependem da tabela vigente na data de faturamento. O "
-        "custo por verificação é, portanto, baixo; o limite prático do plano gratuito está no número de requisições "
-        "por dia, e não no preço.")
+        f"{round(total_tokens_out / 1000)} mil de saída, aproximadamente US$ {num(total_cost, 2)}. O "
+        "valor efetivamente cobrado pelo Google para todas as execuções do experimento, incluindo as duas "
+        "calibrações, as quatro variantes do teste e as execuções interrompidas, 227 itens no total, foi de "
+        "R$ 9,35, média de cerca de R$ 0,04 por item, ordem de grandeza compatível com a estimativa. O custo por "
+        "verificação é, portanto, baixo; o limite prático do plano gratuito está no número de requisições por dia, "
+        "e não no preço.")
     # ------------------------------------------------------------------ 5.8
     lab = full["claim_labels"]
     def share(cls_, lab_):
@@ -200,7 +206,28 @@ def texts(R, D):
             f" Para avaliar a etapa de verificação isoladamente, o autor rotulou manualmente, sem ver o rótulo do "
             f"sistema, as {K['n']} afirmações do conjunto de teste, usando as mesmas evidências que o sistema recebeu. "
             f"A concordância foi de {pct(K['accuracy'])}, com Kappa de Cohen de {num(K['kappa'], 2)}, considerada "
-            f"{K['interp']} segundo Landis e Koch (1977). {K.get('extra', '')}")
+            f"{K['interp']} segundo Landis e Koch (1977).")
+        cf = K.get("confusion")
+        if cf:
+            L3 = ["SUPORTADA", "CONTRADITA", "INSUFICIENTE"]
+            hum_i = sum(cf["INSUFICIENTE"].values()); sys_i = sum(cf[h]["INSUFICIENTE"] for h in L3)
+            dis = sum(cf[h][s_] for h in L3 for s_ in L3 if h != s_)
+            over_c = cf["SUPORTADA"]["CONTRADITA"] + cf["INSUFICIENTE"]["CONTRADITA"]
+            sys_c = sum(cf[h]["CONTRADITA"] for h in L3); hum_c = sum(cf["CONTRADITA"].values())
+            kappa_txt += (
+                f" A matriz de concordância corrige uma leitura possível dos resultados anteriores. Com as mesmas "
+                f"evidências, o próprio autor julgou INSUFICIENTES {hum_i} das {K['n']} afirmações "
+                f"({pct(hum_i / K['n'], 0)}), proporção próxima à do sistema ({sys_i}, {pct(sys_i / K['n'], 0)}): a "
+                "baixa cobertura decorre sobretudo das evidências recuperadas, que muitas vezes não tratam do ponto "
+                "exato da afirmação, e não de uma recusa indevida do classificador. O desvio mais frequente vai no "
+                f"sentido oposto: das {dis} discordâncias, {over_c} são afirmações que o sistema classificou como "
+                f"CONTRADITA e o autor como SUPORTADA ({cf['SUPORTADA']['CONTRADITA']}) ou INSUFICIENTE "
+                f"({cf['INSUFICIENTE']['CONTRADITA']}), em geral porque as evidências tratavam de outro período, "
+                "recorte ou aspecto do assunto e o sistema tomou a diferença como contradição, quando ela apenas não "
+                "permitia decidir. Nenhuma afirmação julgada CONTRADITA pelo autor foi classificada como SUPORTADA. "
+                f"Assim, a revocação de CONTRADITA foi alta ({cf['CONTRADITA']['CONTRADITA']} de {hum_c}) e a sua "
+                f"precisão, menor ({cf['CONTRADITA']['CONTRADITA']} de {sys_c}): o verificador detecta quase todas as "
+                "contradições ao custo de falsos alarmes, o que reforça o fluxo IMPRECISO → FALSO descrito na seção 5.4.")
     else:
         kappa_txt = (
             " A rotulação manual das afirmações para o cálculo do Kappa de Cohen, prevista no TCC I, não pôde ser "
@@ -229,8 +256,9 @@ def texts(R, D):
         "investigação citada de passagem, que, contraditas, contaminam o veredito de uma fala cujo núcleo era "
         "verdadeiro. Terceiro, a fronteira entre IMPRECISO e FALSO é uma questão de grau: a Lupa rotula como "
         "Exagerado um número inflado na direção correta, enquanto o sistema só sabe dizer que o número não "
-        "confere. Esses três mecanismos sugerem que o problema está menos na recuperação de evidências e mais na "
-        "semântica dos rótulos e da agregação, o que orienta os trabalhos futuros.")
+        "confere. Somados à análise de concordância da seção 5.8, esses mecanismos indicam dois problemas distintos: "
+        "a baixa cobertura vem principalmente das evidências recuperadas, e os erros nas afirmações decididas vêm "
+        "da semântica dos rótulos e da agregação. Ambos orientam os trabalhos futuros.")
     # ------------------------------------------------------------------ 5.10
     T["discussao"] = (
         "Frente às referências, o desempenho obtido está abaixo do acerto médio de pessoas (60%) e de Ghadiri *et "
@@ -268,12 +296,12 @@ def texts(R, D):
         "verificação, API com progresso em tempo real, interface web e um ambiente de avaliação reprodutível, e foi "
         "conduzido um experimento de ablação sobre declarações checadas pela agência Lupa.\n\n"
         "A resposta obtida tem duas partes. A primeira é afirmativa: é possível automatizar todas as etapas, da "
-        "entrada do conteúdo ao veredito, com custo baixo, de frações de centavo de dólar por verificação, e com "
+        "entrada do conteúdo ao veredito, com custo baixo, de poucos centavos de real por verificação, e com "
         "rastreabilidade completa, pois cada rótulo aponta as evidências que o sustentam. A segunda é uma "
         "qualificação: no conjunto avaliado, o veredito em três classes produzido pelo pipeline completo ficou no "
         "nível do acaso, e as variantes mais simples, sem decomposição e sem recuperação, obtiveram acurácias "
         "maiores, embora sem diferença estatisticamente significativa. O sistema raramente inverte a verdade, mas tem "
-        "dificuldade com a classe intermediária, por excesso de cautela e porque a sua semântica de rótulos não "
+        "dificuldade com a classe intermediária, porque muitas afirmações ficam sem evidência conclusiva e porque a sua semântica de rótulos não "
         "captura a ideia de exagero.")
     T["conc_objetivos"] = (
         "Quanto aos objetivos específicos (Quadro 2): (a) a fundamentação teórica foi apresentada no Capítulo 2, "

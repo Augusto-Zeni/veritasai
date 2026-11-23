@@ -8,6 +8,29 @@ AUTOR = "Augusto Zeni"
 DATA = "Lajeado, novembro de 2026"
 
 
+def _set_text(p, text):
+    runs = [r for r in p.runs if r.text]
+    if not runs:
+        return
+    runs[0].text = text
+    for r in runs[1:]:
+        r.text = ""
+
+
+def atualizar_capa_modelo(m):
+    """Capa e folha de rosto vêm do modelo da Univates; só os textos mudam."""
+    for p in m.kept:
+        t = p.text.strip()
+        if t.startswith("VeritasAI:"):
+            _set_text(p, TITULO)
+        elif t.startswith("Projeto de Monografia") or t.startswith("Monografia apresentada"):
+            _set_text(p, "Monografia apresentada na disciplina de Trabalho de Conclusão de Curso II, do curso de "
+                         "Engenharia de Software, da Universidade do Vale do Taquari - Univates, como parte da "
+                         "exigência para a obtenção do título de Bacharel em Engenharia de Software.")
+        elif t.startswith("Lajeado,"):
+            _set_text(p, DATA)
+
+
 def capa(m):
     m.para("UNIVERSIDADE DO VALE DO TAQUARI – UNIVATES", "Normal", A.CENTER, bold=True)
     m.para("CURSO DE ENGENHARIA DE SOFTWARE", "Normal", A.CENTER, bold=True)

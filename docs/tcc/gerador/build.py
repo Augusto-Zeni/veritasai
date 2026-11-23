@@ -3,6 +3,7 @@ import csv, os, re, statistics as st, subprocess, sys, importlib
 from collections import Counter
 
 REPO, S, OUT = sys.argv[1], sys.argv[2], sys.argv[3]
+TEMPLATE = sys.argv[4] if len(sys.argv) > 4 else None
 sys.path.insert(0, os.path.join(S, "tools"))
 import abnt, content_a, content_b, content_c, content_refs, results
 try:
@@ -120,11 +121,18 @@ TX = T(R, D) if callable(T) else T
 
 
 def build(meta):
-    m = abnt.Monografia()
-    content_a.capa(m); m.new_section_after_cover(); content_a.folha_rosto(m); content_a.banca(m)
+    m = abnt.Monografia(TEMPLATE)
+    if TEMPLATE:
+        content_a.atualizar_capa_modelo(m)
+    else:
+        content_a.capa(m); m.new_section_after_cover(); content_a.folha_rosto(m)
+    content_a.banca(m)
     content_a.resumo(m, TX)
     content_a.listas(m, meta)
-    m.new_section_numbered()
+    if TEMPLATE:
+        m.template_section_break()
+    else:
+        m.new_section_numbered()
     content_a.cap1(m, TX); content_a.cap2(m, TX); content_a.cap3(m, TX, img)
     content_b.cap4(m, TX, fig, tela)
     content_c.cap5(m, R, D, TX); content_c.cap6(m, R, D, TX)

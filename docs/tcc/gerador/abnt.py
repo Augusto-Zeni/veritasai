@@ -31,7 +31,62 @@ def _set_font(style, size=12, bold=None, italic=None, caps=None):
 
 
 class Monografia:
-    def __init__(self):
+    def __init__(self, template=None):
+        self.template = template
+        if template:
+            self.d = Document(template)
+            d = self.d
+            st = d.styles
+            normal = st["Normal"]
+            self._strip_template()
+            h2 = st["Heading 2"]
+            h2.paragraph_format.space_before = Pt(18); h2.paragraph_format.space_after = Pt(9)
+            h3 = st["Heading 3"]
+            _set_font(h3, 12, bold=True, italic=False)
+            h3.paragraph_format.space_before = Pt(12); h3.paragraph_format.space_after = Pt(6)
+            body = st.add_style("Texto", 1); body.base_style = normal
+            body.paragraph_format.first_line_indent = Cm(1.25)
+            body.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        else:
+            self._init_blank()
+            d = self.d; st = d.styles; normal = st["Normal"]
+        self._init_common(st, normal)
+
+    def _strip_template(self):
+        """Mantém capa e folha de rosto do modelo (até a 2ª quebra de seção) e remove o restante do corpo."""
+        import copy as _copy, re as _re
+        _num = _re.compile(r"^-?\d+\.\d+$")
+        for root in (self.d.element, self.d.styles.element):
+            for el in root.iter():
+                for k, v in list(el.attrib.items()):
+                    if _num.match(v):
+                        el.set(k, str(round(float(v))))
+        body = self.d.element.body
+        children = list(body)
+        sect_paras = [i for i, el in enumerate(children)
+                      if el.tag == qn("w:p") and el.find(".//" + qn("w:sectPr")) is not None]
+        secs = [children[i].find(".//" + qn("w:sectPr")) for i in sect_paras]
+        # seção sem número visível (pré-textuais) e seção com número no rodapé (textuais)
+        self._sec_pre = _copy.deepcopy(secs[4])
+        self._sec_txt = _copy.deepcopy(secs[7])
+        keep_until = sect_paras[1]
+        final = body.find(qn("w:sectPr"))
+        for el in children[keep_until + 1:]:
+            if el is not final:
+                body.remove(el)
+        body.remove(final)
+        body.append(_copy.deepcopy(self._sec_txt))
+        self.kept = [docx_p for docx_p in self.d.paragraphs]
+
+    def template_section_break(self):
+        """Encerra as páginas pré-textuais (rodapé sem número); o texto seguinte numera no rodapé."""
+        import copy as _copy
+        p = self.d.add_paragraph()
+        pPr = p._p.get_or_add_pPr()
+        pPr.append(_copy.deepcopy(self._sec_pre))
+        return p
+
+    def _init_blank(self):
         self.d = Document()
         d = self.d
         s = d.sections[0]
@@ -43,7 +98,6 @@ class Monografia:
         _set_font(normal)
         pf = normal.paragraph_format
         pf.line_spacing = 1.5; pf.space_before = Pt(0); pf.space_after = Pt(0)
-        # corpo do texto
         body = st.add_style("Texto", 1); body.base_style = normal
         body.paragraph_format.first_line_indent = Cm(1.25)
         body.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
@@ -58,11 +112,15 @@ class Monografia:
             h.paragraph_format.first_line_indent = Cm(0)
             h.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
         st["Heading 1"].paragraph_format.space_after = Pt(18)
+
+    def _init_common(self, st, normal):
         # título sem numeração (resumo, listas, referências): centralizado, não entra no sumário numerado
         tn = st.add_style("Titulo sem numero", 1); tn.base_style = normal
         _set_font(tn, 12, bold=True, caps=True)
         tn.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
         tn.paragraph_format.space_after = Pt(18)
+        if self.template:
+            tn.font.size = Pt(14); tn.paragraph_format.space_after = Pt(30)
         li = st.add_style("Lista item", 1); li.base_style = normal
         li.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
         li.paragraph_format.tab_stops.add_tab_stop(Cm(15.9), alignment=WD_TAB_ALIGNMENT.RIGHT, leader=WD_TAB_LEADER.DOTS)
@@ -72,6 +130,8 @@ class Monografia:
         cap.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
         cap.paragraph_format.keep_with_next = True
         cap.paragraph_format.space_before = Pt(6)
+        if self.template:
+            cap.font.italic = True
         src = st.add_style("Fonte ABNT", 1); src.base_style = normal
         _set_font(src, 10)
         src.paragraph_format.line_spacing = 1.0
@@ -166,6 +226,7 @@ class Monografia:
 
     def unnumbered_title(self, text, toc=False):
         p = self.d.add_paragraph(text, style="Heading 1" if toc else "Titulo sem numero")
+        p.paragraph_format.page_break_before = True
         if toc:
             p.alignment = WD_ALIGN_PARAGRAPH.CENTER
             self.headings.append((1, text))
@@ -226,7 +287,10 @@ class Monografia:
     def table(self, kind, title, header, rows, src, widths=None, bold_last_row=False, align_center_from=1):
         n = self.caption(kind, title)
         t = self.d.add_table(rows=1 + len(rows), cols=len(header))
-        t.style = "Table Grid"
+        try:
+            t.style = "Table Grid"
+        except KeyError:
+            self._set_borders(t, {e: "single" for e in ("top", "bottom", "left", "right", "insideH", "insideV")})
         t.alignment = WD_TABLE_ALIGNMENT.CENTER
         for i, row in enumerate([header] + rows):
             for j, val in enumerate(row):
@@ -253,10 +317,13 @@ class Monografia:
         return n
 
     def _ibge_borders(self, t):
+        self._set_borders(t, {"top": "single", "bottom": "single", "left": "nil", "right": "nil",
+                              "insideH": "single", "insideV": "nil"})
+
+    def _set_borders(self, t, spec):
         tblPr = t._tbl.tblPr
         b = OxmlElement("w:tblBorders")
-        for edge, val in (("top", "single"), ("bottom", "single"), ("left", "nil"), ("right", "nil"),
-                          ("insideH", "single"), ("insideV", "nil")):
+        for edge, val in spec.items():
             e = OxmlElement(f"w:{edge}"); e.set(qn("w:val"), val); e.set(qn("w:sz"), "6"); e.set(qn("w:color"), "000000")
             b.append(e)
         old = tblPr.find(qn("w:tblBorders"))
